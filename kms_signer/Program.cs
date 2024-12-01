@@ -1,5 +1,15 @@
 ﻿using Amazon.KeyManagementService;
 
+string kmsKeyId = "";
+
+        try
+        {
+            kmsKeyId = Environment.GetEnvironmentVariable("kmsKeyId").TrimStart('/');
+        }
+        catch
+        {
+        }
+
 MemoryStream input = new MemoryStream();
 
 try
@@ -17,21 +27,16 @@ try
 
     var signResponse = await client.SignAsync(new Amazon.KeyManagementService.Model.SignRequest()
     {
-        KeyId = "<put in here your KMS KeyId>",
+        KeyId = kmsKeyId,
         MessageType = MessageType.RAW,
         SigningAlgorithm = SigningAlgorithmSpec.ECDSA_SHA_256,
         Message = input
     });
 
     MemoryStream output = new System.IO.MemoryStream();
-
     signResponse.Signature.CopyTo(output);
-
     output.Position = 0;
-
     output.CopyTo(Console.OpenStandardOutput());
-
-
 }
 catch (System.Exception e)
 { Console.WriteLine(e.Message); }
