@@ -12,11 +12,6 @@
 			"Type": "String",
 			"Default": "data_sign",
 			"MaxLength": 50
-		},
-		"SigningKeyEnv": {
-			"Description": "KMS Key ID of used KMS Signer Key",
-			"Type": "String",
-			"Default": "45c6d6f5-2cbc-4eed-8fd5-9bcec8b2fa47"
 		}
 	},
 
@@ -61,7 +56,7 @@
 												"Fn::Join": [
 													"",
 													[
-														{ "Ref": "s3BucketPathEnv" },
+														{ "Ref": "s3BucketPathSignedEnv" },
 														"/"
 													]
 												]
@@ -80,7 +75,7 @@
 				"Environment": {
 					"Variables": {
 						"kmsKeyId": {
-							"Ref": "SigningKeyEnv"
+							"Ref": "SigningKey"
 						},
 						"s3BucketPath": {
 							"Ref": "s3BucketPathEnv"
@@ -111,16 +106,6 @@
 								"Action": [
 									"s3:*",
 									"s3-object-lambda:*"
-								],
-								"Resource": "*"
-							},
-							{
-								"Effect": "Allow",
-								"Action": [
-									"kms:DescribeKey",
-									"kms:GetPublicKey",
-									"kms:Sign",
-									"kms:Verify"
 								],
 								"Resource": "*"
 							}
@@ -157,6 +142,121 @@
 				"PublicAccessBlockConfiguration": {
 					"IgnorePublicAcls": true,
 					"RestrictPublicBuckets": true
+				}
+			}
+		},
+		"BucketC2PASignBucketPolicy": {
+			"Type": "AWS::S3::BucketPolicy",
+			"Properties": {
+				"Bucket": {
+					"Ref": "BucketC2PASign"
+				},
+				"PolicyDocument": {
+					"Id": "RequireEncryptionInTransit",
+					"Version": "2012-10-17",
+					"Statement": [
+						{
+							"Principal": "*",
+							"Action": "*",
+							"Effect": "Deny",
+							"Resource": [
+								{
+									"Fn::GetAtt": [
+										"BucketC2PASign",
+										"Arn"
+									]
+								},
+								{
+									"Fn::Sub": "${BucketC2PASign.Arn}/*"
+								}
+							],
+							"Condition": {
+								"Bool": {
+									"aws:SecureTransport": "false"
+								}
+							}
+						}
+					]
+				}
+			}
+		},
+		"SigningKey": {
+			"Type": "AWS::KMS::Key",
+			"Properties": {
+				"Description": "asymmetric KMS key for signing and verification",
+				"KeySpec": "ECC_NIST_P256",
+				"KeyUsage": "SIGN_VERIFY",
+				"Origin": "EXTERNAL",
+				"KeyPolicy": {
+					"Version": "2012-10-17",
+					"Id": "key-default-1",
+					"Statement": [
+					{
+            "Sid": "Enable IAM User Permissions",
+            "Effect": "Allow",
+            "Principal": {
+								"AWS": {
+									"Fn::Sub": "arn:aws:iam::${AWS::AccountId}:root"
+								}
+							},
+            "Action": "kms:*",
+            "Resource": "*"
+        },
+						{
+							"Sid": "Allow access for Key Administrators",
+							"Effect": "Allow",
+							"Principal": {
+								"AWS": {
+									"Fn::Sub": "arn:aws:iam::${AWS::AccountId}:user/DeployLambda"
+								}
+							},
+							"Action": [
+								"kms:Create*",
+								"kms:Describe*",
+								"kms:Enable*",
+								"kms:List*",
+								"kms:Put*",
+								"kms:Update*",
+								"kms:Revoke*",
+								"kms:Disable*",
+								"kms:Get*",
+								"kms:Delete*",
+								"kms:ImportKeyMaterial",
+								"kms:TagResource",
+								"kms:UntagResource",
+								"kms:ScheduleKeyDeletion",
+								"kms:CancelKeyDeletion"
+							],
+							"Resource": "*"
+						},
+						{
+							"Sid": "Allow use of the key",
+							"Effect": "Allow",
+							"Principal": {
+								"AWS": {
+										"Fn::Sub": "arn:aws:iam::${AWS::AccountId}:user/DeployLambda"
+									}
+							},
+							"Action": [
+								"kms:DescribeKey",
+								"kms:GetPublicKey",
+								"kms:Sign",
+								"kms:Verify"
+							],
+							"Resource": "*"
+						}
+					]
+				}
+			}
+		},
+		"SigningKeyAlias": {
+			"Type": "AWS::KMS::Alias",
+			"Properties": {
+				"AliasName": {
+									"Fn::Sub": "alias/${AWS::StackName}-KmsKey"
+								},
+				"TargetKeyId": {
+					"Ref": "SigningKey"
 				}
 			}
 		}

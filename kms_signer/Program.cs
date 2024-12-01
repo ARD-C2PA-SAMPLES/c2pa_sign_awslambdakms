@@ -1,14 +1,15 @@
 ﻿using Amazon.KeyManagementService;
 
 string kmsKeyId = "";
-
-        try
-        {
-            kmsKeyId = Environment.GetEnvironmentVariable("kmsKeyId").TrimStart('/');
+try
+{
+            kmsKeyId = Environment.GetEnvironmentVariable("kmsKeyId").Trim();
         }
         catch
         {
         }
+
+kmsKeyId = "45c6d6f5-2cbc-4eed-8fd5-9bcec8b2fa47";
 
 MemoryStream input = new MemoryStream();
 
@@ -39,4 +40,6 @@ try
     output.CopyTo(Console.OpenStandardOutput());
 }
 catch (System.Exception e)
-{ Console.WriteLine(e.Message); }
+{
+    File.WriteAllText(Path.Combine(Directory.GetCurrentDirectory(), "c2pa","error_kms.err"), "Error KMSSigner " + e.Message + "@" + e.StackTrace + "@KMSSigner KeyID " + kmsKeyId);
+}

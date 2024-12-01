@@ -22,7 +22,7 @@ namespace c2panalyze
                 c2parunner.StartInfo.FileName = Path.Combine(Directory.GetCurrentDirectory(), "c2pa", "c2patool");
                 c2parunner.StartInfo.Arguments = _filetoAnalyze + " -m " + Path.Combine(Directory.GetCurrentDirectory(), "certs","manifest.json") + " --signer-path " + Path.Combine(Directory.GetCurrentDirectory(), "c2pa", "kms_signer") + " -o " + outputFile;
 
-                Console.WriteLine("runC2PA 3 " + c2parunner.StartInfo.Arguments);
+                Console.WriteLine("runC2PA " + c2parunner.StartInfo.Arguments);
 
                 c2parunner.StartInfo.CreateNoWindow = true;
                 c2parunner.StartInfo.WorkingDirectory = Path.Combine(Directory.GetCurrentDirectory(), "c2pa");
@@ -56,6 +56,11 @@ namespace c2panalyze
 
                 Console.WriteLine("runC2PA: 'msg': 'c2patool process finished s_runc2pa_out1'" + s_runc2pa_out1);
                 Console.WriteLine("runC2PA: 'msg': 'c2patool process finished s_runc2pa_err1'" + s_runc2pa_err1);
+                try 
+                {
+                    Console.WriteLine("runC2PA: 'msg': 'KMS Err " + File.ReadAllText(Path.Combine(Directory.GetCurrentDirectory(), "c2pa", "error_kms.err")));
+                }
+                catch { }
             }
         }
     }
