@@ -1,15 +1,13 @@
 ﻿using Amazon.KeyManagementService;
-
 string kmsKeyId = "";
+
 try
 {
-            kmsKeyId = Environment.GetEnvironmentVariable("kmsKeyId").Trim();
-        }
-        catch
-        {
-        }
-
-kmsKeyId = "45c6d6f5-2cbc-4eed-8fd5-9bcec8b2fa47";
+   kmsKeyId = Environment.GetEnvironmentVariable("kmsKeyId").Trim();
+}
+catch
+{
+}
 
 MemoryStream input = new MemoryStream();
 
