@@ -9,3 +9,5 @@ doc/.DS_Store
 kms_signer/kms_signer.csproj.user
 /kms_signer/Properties
 lambda_c2pasign/c2pa/kms_signer.pdb
+/lambda_c2pasign/.aws-sam
+.DS_Store
