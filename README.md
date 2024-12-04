@@ -7,7 +7,8 @@
  ``
 openssl pkcs8 -topk8 -inform PEM -outform DER -in es256_private.key -out es256_private.der -nocrypt
 ``
-Now we have private key `es256_private.der`
+Now we have private key `es256_private.der` in DER Binary Format.
+Important: please ensure, that both public and private key belong together. Here in sample we're using private key from https://github.com/contentauth/c2patool/blob/main/sample/es256_private.key
 2. Create KMS Key with:
 ``
 aws kms create-key --key-spec ECC_NIST_P256 --key-usage SIGN_VERIFY --origin EXTERNAL
