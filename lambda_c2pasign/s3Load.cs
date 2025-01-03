@@ -38,7 +38,7 @@ namespace c2panalyze
 
         }
 
-        public async Task<string> putS3Files(List<string> FilesToUploadFinal, string bucket, string s3BucketPath)
+        public async Task<string> putS3Files(List<string> FilesToUploadFinal, string bucket, string s3BucketPath, string pathToRemove)
         {
             string returnerrors = "";
             try
@@ -121,11 +121,11 @@ namespace c2panalyze
                                             BucketName = bucket,
                                             //FIXME name data and data_signed need to be parametrized !!!
                                             
-                                            Key = Path.Combine(s3BucketPath.TrimStart('/'), currfile.Replace("\\", "/").Replace("/tmp/data/", "").Replace("/tmp/data_sign/", "")),
+                                            Key = Path.Combine(s3BucketPath.TrimStart('/'), currfile.Replace("\\", "/").Replace(pathToRemove, "")),
                                             FilePath = currfile
                                         };
 
-                                    Console.WriteLine("DEBUG Key upload " + Path.Combine(s3BucketPath.TrimStart('/'), currfile.Replace("\\", "/").Replace("/tmp/data/", "").Replace("/tmp/data_sign/", "")));
+                                    Console.WriteLine("DEBUG Key upload " + Path.Combine(s3BucketPath.TrimStart('/'), currfile.Replace("\\", "/").Replace(pathToRemove, "")));
                                     await fileTransferUtility.UploadAsync(uploadRequest);
 
 

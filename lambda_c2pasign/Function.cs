@@ -63,13 +63,14 @@ public class Function
         Console.WriteLine("fileName " + fileName);
 
         string extension = System.IO.Path.GetExtension(fileName);
-        string _outputDirectory = "/tmp/" + fileName.Replace(extension, "");
         string _tmpFilename = "/tmp/" + fileName;
         string _tmpFilenameSigned = "/tmp/" + fileName.Replace(extension, "") + "_signed" + extension;
 
+        string _pathToRemove = _tmpFilenameSigned.Replace("/tmp/", "").Replace(Path.GetFileName(fileName),"");
+
         Console.WriteLine("_tmpFilename " + _tmpFilename);
         Console.WriteLine("_tmpFilenameSigned " + _tmpFilenameSigned);
-        Console.WriteLine("_outputDirectory " + _outputDirectory);
+        Console.WriteLine("_pathToRemove " + _pathToRemove);
 
         try
         {
@@ -95,7 +96,7 @@ public class Function
             List<string> _ingredientFiles1 = new List<string>();
             _ingredientFiles1.Add(_tmpFilenameSigned);
             Console.WriteLine("Upload file Sign " + _tmpFilenameSigned);
-            string s3result1 = s3Loader.putS3Files(_ingredientFiles1, bucketName, s3BucketPathSigned).GetAwaiter().GetResult();
+            string s3result1 = s3Loader.putS3Files(_ingredientFiles1, bucketName, s3BucketPathSigned, _pathToRemove).GetAwaiter().GetResult();
             Console.WriteLine("putS3Files Result " + s3result1);
             File.Delete(_tmpFilenameSigned);
             File.Delete(_tmpFilename);
