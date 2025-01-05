@@ -121,11 +121,11 @@ namespace c2panalyze
                                             BucketName = bucket,
                                             //FIXME name data and data_signed need to be parametrized !!!
                                             
-                                            Key = Path.Combine(s3BucketPath.TrimStart('/'), currfile.Replace("\\", "/").Replace(pathToRemove, "")),
+                                            Key = Path.Combine(s3BucketPath.Trim('/'), currfile.Replace("\\", "/").Replace(pathToRemove, "").Trim('/')),
                                             FilePath = currfile
                                         };
 
-                                    Console.WriteLine("DEBUG Key upload " + Path.Combine(s3BucketPath.TrimStart('/'), currfile.Replace("\\", "/").Replace(pathToRemove, "")));
+                                    Console.WriteLine("DEBUG Key upload " + Path.Combine(s3BucketPath.Trim('/'), currfile.Replace("\\", "/").Replace(pathToRemove, "").Trim('/')));
                                     await fileTransferUtility.UploadAsync(uploadRequest);
 
 

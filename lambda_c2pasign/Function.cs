@@ -66,7 +66,7 @@ public class Function
         string _tmpFilename = "/tmp/" + fileName;
         string _tmpFilenameSigned = "/tmp/" + fileName.Replace(extension, "") + "_signed" + extension;
 
-        string _pathToRemove = _tmpFilenameSigned.Replace("/tmp/", "").Replace(Path.GetFileName(fileName),"");
+        string _pathToRemove = "/tmp/" + s3BucketPath.Trim('/');
 
         Console.WriteLine("_tmpFilename " + _tmpFilename);
         Console.WriteLine("_tmpFilenameSigned " + _tmpFilenameSigned);
